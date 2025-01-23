@@ -49,14 +49,16 @@ function ChatInterface() {
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
       const apiHost = endpoint || 'localhost';
-      const apiUrl = window.location.hostname.includes('github.io') 
-        ? `http://${apiHost}:${port}/api/generate`
-        : '/api/generate';
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      const apiUrl = isGitHubPages 
+        ? `http://${apiHost}:${port}/generate`  // Direct connection for GitHub Pages
+        : '/api/generate';  // Proxy for development
       
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
           model: modelToUse,
