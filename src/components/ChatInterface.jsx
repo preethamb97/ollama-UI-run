@@ -32,6 +32,7 @@ function ChatInterface() {
     'custom'
   ];
 
+  
   const scrollToBottom = () => {
     responseEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
