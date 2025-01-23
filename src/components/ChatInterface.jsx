@@ -48,9 +48,7 @@ function ChatInterface() {
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
       // Use window.location.hostname to get the current host
-      const apiHost = process.env.NODE_ENV === 'production' 
-        ? window.location.hostname 
-        : endpoint || 'localhost';
+      const apiHost = endpoint || 'localhost';
       
       const response = await fetch(`http://${apiHost}:${port}/api/generate`, {
         method: 'POST',
