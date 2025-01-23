@@ -48,20 +48,18 @@ function ChatInterface() {
     setLoading(true);
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
-      // Use window.location.hostname to get the current host
       const apiHost = endpoint || 'localhost';
+      const apiUrl = window.location.hostname.includes('github.io') 
+        ? `http://${apiHost}:${port}/api/generate`
+        : '/api/generate';
       
-      const response = await fetch(`http://${apiHost}:${port}/api/generate`, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
         },
-        mode: 'cors',
         body: JSON.stringify({
-          model: modelToUse, // Use the correct model name
+          model: modelToUse,
           prompt: prompt,
         }),
       });
