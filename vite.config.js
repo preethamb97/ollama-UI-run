@@ -12,13 +12,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
-        configure: (proxy, _options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            proxyReq.setHeader('Access-Control-Allow-Origin', '*');
-            proxyReq.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            proxyReq.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-          });
-        }
       },
     },
   },
