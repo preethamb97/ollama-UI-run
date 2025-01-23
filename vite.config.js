@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ollama-UI-locally/',
+  base: '/ollama-UI-run/',
   plugins: [react()],
   server: {
     proxy: {

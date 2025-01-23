@@ -34,5 +34,6 @@
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.0",
     "vite": "^6.0.5"
-  }
+  },
+  "homepage": "https://preethamb97.github.io/ollama-UI-run"
 }
