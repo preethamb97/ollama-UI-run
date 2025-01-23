@@ -32,7 +32,7 @@ function ChatInterface() {
     'custom'
   ];
 
-  
+
   const scrollToBottom = () => {
     responseEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -55,7 +55,11 @@ function ChatInterface() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
         },
+        mode: 'cors',
         body: JSON.stringify({
           model: modelToUse, // Use the correct model name
           prompt: prompt,

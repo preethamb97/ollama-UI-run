@@ -1,4 +1,4 @@
-import { Box, TextField, Button, CircularProgress, alpha, Select, MenuItem, FormControl, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, TextField, Button, CircularProgress, alpha, Select, MenuItem, FormControl, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -19,6 +19,8 @@ function Footer({
   settingsOpen,
   setSettingsOpen
 }) {
+  const isGitHubPages = window.location.hostname.includes('github.io');
+
   return (
     <Box 
       className="fixed bottom-0 left-0 right-0 flex items-center justify-center py-4 px-4 md:px-8"
@@ -138,6 +140,17 @@ function Footer({
                 }
               }}
             />
+            {isGitHubPages && (
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: '#ff9800',
+                  mt: 1 
+                }}
+              >
+                Note: When using GitHub Pages, you need to ensure your Ollama server is accessible at the specified endpoint
+              </Typography>
+            )}
             <TextField
               label="Port"
               value={port}
