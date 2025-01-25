@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ConversationMessage from './ConversationMessage';
 
-function Body({ conversations, currentConversationId, onRequestRevision }) {
+function Body({ conversations, currentConversationId, onRequestRevision, onQuestionRevision }) {
   return (
     <Box 
       className="flex-1 py-4 px-4 md:px-8"
@@ -43,6 +43,7 @@ function Body({ conversations, currentConversationId, onRequestRevision }) {
                 key={message.id}
                 message={message}
                 onRequestRevision={onRequestRevision}
+                onQuestionRevision={onQuestionRevision}
               />
             ))
         ) : (

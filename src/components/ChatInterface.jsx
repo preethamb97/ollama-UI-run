@@ -140,6 +140,26 @@ function ChatInterface() {
     setPrompt(`Revise this response: ${message.botResponse}\n\nRevision request: ${revision}`);
   };
 
+  const handleQuestionRevision = async (messageId, newQuestion) => {
+    setPrompt(newQuestion);
+    handleSubmit(new Event('submit'));
+    
+    // Update the conversation history
+    setConversations(prev => 
+      prev.map(conv => {
+        if (conv.id === currentConversationId) {
+          const updatedMessages = conv.messages.map(msg => 
+            msg.id === messageId 
+              ? { ...msg, userPrompt: newQuestion }
+              : msg
+          );
+          return { ...conv, messages: updatedMessages };
+        }
+        return conv;
+      })
+    );
+  };
+
   return (
     <Box className="fixed inset-0 flex">
       {/* Sidebar */}
@@ -186,6 +206,7 @@ function ChatInterface() {
           conversations={conversations}
           currentConversationId={currentConversationId}
           onRequestRevision={handleRevision}
+          onQuestionRevision={handleQuestionRevision}
         />
         <Footer 
           prompt={prompt}
