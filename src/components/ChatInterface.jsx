@@ -162,44 +162,6 @@ function ChatInterface() {
 
   return (
     <Box className="fixed inset-0 flex">
-      {/* Sidebar */}
-      <Box 
-        sx={{ 
-          width: 280, 
-          borderRight: '1px solid rgba(99, 102, 241, 0.1)',
-          background: 'rgba(15, 23, 42, 0.7)',
-          backdropFilter: 'blur(10px)',
-          display: { xs: 'none', md: 'block' }
-        }}
-      >
-        <Button
-          fullWidth
-          onClick={() => setShowModelManager(true)}
-          sx={{ 
-            color: '#818cf8',
-            py: 2,
-            borderBottom: '1px solid rgba(99, 102, 241, 0.1)'
-          }}
-        >
-          Manage Models
-        </Button>
-        
-        {/* Conversation List */}
-        <List>
-          {conversations.map((conv) => (
-            <ListItem 
-              key={conv.id}
-              button
-              selected={currentConversationId === conv.id}
-              onClick={() => setCurrentConversationId(conv.id)}
-            >
-              <ListItemText primary={conv.title} />
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-
-      {/* Main Chat Area */}
       <Box className="flex-1 flex flex-col">
         <Header />
         <Body 
@@ -226,15 +188,6 @@ function ChatInterface() {
           setSettingsOpen={setSettingsOpen}
         />
       </Box>
-
-      {/* Model Manager Dialog */}
-      <Dialog 
-        fullScreen 
-        open={showModelManager} 
-        onClose={() => setShowModelManager(false)}
-      >
-        <ModelManager />
-      </Dialog>
     </Box>
   );
 }
