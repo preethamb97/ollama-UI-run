@@ -16,7 +16,7 @@ function ChatInterface() {
   const responseEndRef = useRef(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const [currentConversation, setCurrentConversation] = useState(null);
+  const [currentConversationId, setCurrentConversationId] = useState(null);
   const [showModelManager, setShowModelManager] = useState(false);
 
   // Add available models
@@ -45,11 +45,44 @@ function ChatInterface() {
     scrollToBottom();
   }, [response]);
 
+  const addToConversation = (userPrompt, botResponse) => {
+    const timestamp = new Date().toISOString();
+    const messageId = Math.random().toString(36).substr(2, 9);
+    
+    const newMessage = {
+      id: messageId,
+      timestamp,
+      userPrompt,
+      botResponse,
+    };
+
+    setConversations(prev => {
+      if (currentConversationId) {
+        return prev.map(conv => 
+          conv.id === currentConversationId 
+            ? { ...conv, messages: [...conv.messages, newMessage] }
+            : conv
+        );
+      } else {
+        const newConversationId = Math.random().toString(36).substr(2, 9);
+        setCurrentConversationId(newConversationId);
+        return [...prev, {
+          id: newConversationId,
+          title: userPrompt.slice(0, 30) + '...',
+          messages: [newMessage]
+        }];
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!prompt.trim()) return;
 
+    const userPrompt = prompt;
+    setPrompt('');
     setLoading(true);
+    
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
       const apiHost = endpoint || 'localhost';
@@ -88,12 +121,23 @@ function ChatInterface() {
           }
         }
       }
+
+      addToConversation(userPrompt, fullResponse);
     } catch (error) {
       console.error('Error:', error);
       setResponse(`Error: ${error.message || 'Failed to connect to Ollama server'}`);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRevision = async (messageId, revision) => {
+    const conversation = conversations.find(conv => 
+      conv.id === currentConversationId
+    );
+    const message = conversation.messages.find(msg => msg.id === messageId);
+    
+    setPrompt(`Revise this response: ${message.botResponse}\n\nRevision request: ${revision}`);
   };
 
   return (
@@ -126,8 +170,8 @@ function ChatInterface() {
             <ListItem 
               key={conv.id}
               button
-              selected={currentConversation?.id === conv.id}
-              onClick={() => setCurrentConversation(conv)}
+              selected={currentConversationId === conv.id}
+              onClick={() => setCurrentConversationId(conv.id)}
             >
               <ListItemText primary={conv.title} />
             </ListItem>
@@ -138,7 +182,11 @@ function ChatInterface() {
       {/* Main Chat Area */}
       <Box className="flex-1 flex flex-col">
         <Header />
-        <Body response={response} responseEndRef={responseEndRef} />
+        <Body 
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onRequestRevision={handleRevision}
+        />
         <Footer 
           prompt={prompt}
           setPrompt={setPrompt}
