@@ -10,19 +10,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:11434',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
-  preview: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:11434',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   }
 })

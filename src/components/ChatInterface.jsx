@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button, List, ListItem, ListItemText, Dialog } from '@mui/material';
 import Header from './Header';
 import Body from './Body';
 import Footer from './Footer';
+import ModelManager from './ModelManager';
 
 function ChatInterface() {
   const [prompt, setPrompt] = useState('');
@@ -14,6 +15,9 @@ function ChatInterface() {
   const [customModel, setCustomModel] = useState('');
   const responseEndRef = useRef(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [currentConversation, setCurrentConversation] = useState(null);
+  const [showModelManager, setShowModelManager] = useState(false);
 
   // Add available models
   const availableModels = [
@@ -49,16 +53,12 @@ function ChatInterface() {
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
       const apiHost = endpoint || 'localhost';
-      const isGitHubPages = window.location.hostname.includes('github.io');
-      const apiUrl = isGitHubPages 
-        ? `http://${apiHost}:${port}/generate`  // Direct connection for GitHub Pages
-        : '/api/generate';  // Proxy for development
+      const apiUrl = `http://${apiHost}:${port}/api/generate`  // Direct connection for GitHub Pages
       
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
           model: modelToUse,
@@ -97,26 +97,75 @@ function ChatInterface() {
   };
 
   return (
-    <Box className="fixed inset-0 flex flex-col">
-      <Header />
-      <Body response={response} responseEndRef={responseEndRef} />
-      <Footer 
-        prompt={prompt}
-        setPrompt={setPrompt}
-        loading={loading}
-        handleSubmit={handleSubmit}
-        selectedModel={selectedModel}
-        setSelectedModel={setSelectedModel}
-        availableModels={availableModels}
-        endpoint={endpoint}
-        setEndpoint={setEndpoint}
-        port={port}
-        setPort={setPort}
-        customModel={customModel}
-        setCustomModel={setCustomModel}
-        settingsOpen={settingsOpen}
-        setSettingsOpen={setSettingsOpen}
-      />
+    <Box className="fixed inset-0 flex">
+      {/* Sidebar */}
+      <Box 
+        sx={{ 
+          width: 280, 
+          borderRight: '1px solid rgba(99, 102, 241, 0.1)',
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(10px)',
+          display: { xs: 'none', md: 'block' }
+        }}
+      >
+        <Button
+          fullWidth
+          onClick={() => setShowModelManager(true)}
+          sx={{ 
+            color: '#818cf8',
+            py: 2,
+            borderBottom: '1px solid rgba(99, 102, 241, 0.1)'
+          }}
+        >
+          Manage Models
+        </Button>
+        
+        {/* Conversation List */}
+        <List>
+          {conversations.map((conv) => (
+            <ListItem 
+              key={conv.id}
+              button
+              selected={currentConversation?.id === conv.id}
+              onClick={() => setCurrentConversation(conv)}
+            >
+              <ListItemText primary={conv.title} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+      {/* Main Chat Area */}
+      <Box className="flex-1 flex flex-col">
+        <Header />
+        <Body response={response} responseEndRef={responseEndRef} />
+        <Footer 
+          prompt={prompt}
+          setPrompt={setPrompt}
+          loading={loading}
+          handleSubmit={handleSubmit}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          availableModels={availableModels}
+          endpoint={endpoint}
+          setEndpoint={setEndpoint}
+          port={port}
+          setPort={setPort}
+          customModel={customModel}
+          setCustomModel={setCustomModel}
+          settingsOpen={settingsOpen}
+          setSettingsOpen={setSettingsOpen}
+        />
+      </Box>
+
+      {/* Model Manager Dialog */}
+      <Dialog 
+        fullScreen 
+        open={showModelManager} 
+        onClose={() => setShowModelManager(false)}
+      >
+        <ModelManager />
+      </Dialog>
     </Box>
   );
 }
