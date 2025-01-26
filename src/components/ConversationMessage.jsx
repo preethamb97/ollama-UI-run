@@ -45,7 +45,7 @@ function ConversationMessage({ message, onRequestRevision, onQuestionRevision })
                 onChange={(e) => setQuestionRevision(e.target.value)}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    color: '#e2e8f0',
+                    color: '#ffffff',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
                     borderRadius: '12px',
                   }
@@ -71,7 +71,7 @@ function ConversationMessage({ message, onRequestRevision, onQuestionRevision })
                 alignItems: 'flex-start',
               }}
             >
-              <Typography sx={{ color: '#e2e8f0', flex: 1 }}>
+              <Typography sx={{ color: '#ffffff', flex: 1 }}>
                 {message.userPrompt}
               </Typography>
               <IconButton
@@ -93,6 +93,12 @@ function ConversationMessage({ message, onRequestRevision, onQuestionRevision })
             width: '90%',
             backgroundColor: 'rgba(30, 27, 75, 0.4)',
             borderRadius: '12px 12px 0 12px',
+            '& .prose': {
+              color: '#ffffff',
+            },
+            '& .prose-invert': {
+              color: '#ffffff',
+            }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -120,7 +126,7 @@ function ConversationMessage({ message, onRequestRevision, onQuestionRevision })
                 placeholder="What would you like to revise?"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    color: '#e2e8f0',
+                    color: '#ffffff',
                     backgroundColor: 'rgba(30, 27, 75, 0.6)',
                   }
                 }}

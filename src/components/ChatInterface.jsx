@@ -83,10 +83,45 @@ function ChatInterface() {
     setPrompt('');
     setLoading(true);
     
+    // Immediately add user's message to conversation
+    const messageId = Math.random().toString(36).substr(2, 9);
+    const timestamp = new Date().toISOString();
+    
+    setConversations(prev => {
+      if (currentConversationId) {
+        return prev.map(conv => 
+          conv.id === currentConversationId 
+            ? { 
+                ...conv, 
+                messages: [...conv.messages, {
+                  id: messageId,
+                  timestamp,
+                  userPrompt,
+                  botResponse: ''  // Start with empty response
+                }]
+              }
+            : conv
+        );
+      } else {
+        const newConversationId = Math.random().toString(36).substr(2, 9);
+        setCurrentConversationId(newConversationId);
+        return [...prev, {
+          id: newConversationId,
+          title: userPrompt.slice(0, 30) + '...',
+          messages: [{
+            id: messageId,
+            timestamp,
+            userPrompt,
+            botResponse: ''  // Start with empty response
+          }]
+        }];
+      }
+    });
+    
     try {
       const modelToUse = selectedModel === 'custom' ? customModel : selectedModel;
       const apiHost = endpoint || 'localhost';
-      const apiUrl = `http://${apiHost}:${port}/api/generate`  // Direct connection for GitHub Pages
+      const apiUrl = `http://${apiHost}:${port}/api/generate`;
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -104,7 +139,7 @@ function ChatInterface() {
       }
 
       const reader = response.body.getReader();
-      let fullResponse = '';
+      let accumulatedResponse = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -116,16 +151,45 @@ function ChatInterface() {
         for (const line of lines) {
           if (line.trim()) {
             const json = JSON.parse(line);
-            fullResponse += json.response;
-            setResponse(fullResponse);
+            accumulatedResponse += json.response;
+            
+            // Update the conversation in real-time
+            setConversations(prev => 
+              prev.map(conv => {
+                if (conv.id === currentConversationId) {
+                  return {
+                    ...conv,
+                    messages: conv.messages.map(msg => 
+                      msg.id === messageId
+                        ? { ...msg, botResponse: accumulatedResponse }
+                        : msg
+                    )
+                  };
+                }
+                return conv;
+              })
+            );
           }
         }
       }
-
-      addToConversation(userPrompt, fullResponse);
     } catch (error) {
       console.error('Error:', error);
-      setResponse(`Error: ${error.message || 'Failed to connect to Ollama server'}`);
+      // Update conversation with error message
+      setConversations(prev => 
+        prev.map(conv => {
+          if (conv.id === currentConversationId) {
+            return {
+              ...conv,
+              messages: conv.messages.map(msg => 
+                msg.id === messageId
+                  ? { ...msg, botResponse: `Error: ${error.message || 'Failed to connect to Ollama server'}` }
+                  : msg
+              )
+            };
+          }
+          return conv;
+        })
+      );
     } finally {
       setLoading(false);
     }
